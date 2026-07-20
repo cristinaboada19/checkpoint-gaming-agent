@@ -66,8 +66,31 @@ def get_sources(
     return sources
 
 
+def format_history(
+    history: list[dict[str, Any]] | None,
+) -> str:
+    if not history:
+        return "Sin historial previo."
+
+    lines = []
+
+    for message in history[-6:]:
+        role = (
+            "Colaborador"
+            if message["role"] == "user"
+            else "Agente"
+        )
+
+        lines.append(
+            f"{role}: {message['content']}"
+        )
+
+    return "\n".join(lines)
+
+
 def generate_answer(
     question: str,
+    history: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     results = retrieve_documents(question)
 
@@ -81,29 +104,36 @@ def generate_answer(
         }
 
     context = build_context(results)
+    history_text = format_history(history)
 
     system_prompt = """
-Eres el asistente interno de Checkpoint Gaming.
+Eres el asistente interno de inteligencia artificial de Checkpoint Gaming.
 
 Tu función es responder consultas de colaboradores utilizando únicamente
 la información contenida en el contexto documental proporcionado.
 
 Reglas:
-- Responde únicamente con información respaldada por el contexto.
+- Responde únicamente con información respaldada por el contexto documental.
 - No utilices conocimiento externo.
 - No inventes políticas, procedimientos, plazos, condiciones ni datos.
 - Si el contexto no contiene información suficiente para responder,
   indica claramente que no encontraste esa información en los documentos disponibles.
+- El historial sirve únicamente para comprender la continuidad de la conversación.
+- El historial no debe utilizarse como fuente factual.
 - Responde de forma clara, directa y profesional.
 - No inventes nombres de documentos ni números de página.
 """
 
     human_prompt = f"""
+HISTORIAL DE CONVERSACIÓN:
+
+{history_text}
+
 CONTEXTO DOCUMENTAL:
 
 {context}
 
-PREGUNTA DEL COLABORADOR:
+PREGUNTA ACTUAL DEL COLABORADOR:
 
 {question}
 
@@ -119,16 +149,14 @@ Responde únicamente basándote en el contexto documental.
         ]
     )
 
-    answer = response.content
-
     return {
-        "answer": answer,
+        "answer": response.content,
         "sources": get_sources(results),
     }
 
 
 if __name__ == "__main__":
-    question = "El cliente dice que su pedido figura como entregado pero no lo recibió, cómo procedemos?"
+    question = "¿Qué pasa si un producto llega dañado?"
 
     result = generate_answer(question)
 
