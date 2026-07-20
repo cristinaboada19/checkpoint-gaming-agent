@@ -24,7 +24,7 @@ def create_vector_index() -> None:
     y crea un índice vectorial local con FAISS.
     """
 
-    # Cargar variables del archivo .env
+    
     load_dotenv(ROOT_DIR / ".env")
 
     if not os.getenv("GOOGLE_API_KEY"):
@@ -32,10 +32,9 @@ def create_vector_index() -> None:
             "No se encontró GOOGLE_API_KEY en el archivo .env"
         )
 
-    # Crear carpeta donde se guardará el índice
+    
     VECTOR_STORE_DIR.mkdir(exist_ok=True)
 
-    # Reutilizamos el procesamiento del Paso 2
     documents = load_all_documents()
     chunks = split_documents(documents)
 
@@ -67,25 +66,19 @@ def create_vector_index() -> None:
         dtype=np.float32,
     )
 
-    # Normalización para búsqueda por similitud coseno
     faiss.normalize_L2(vectors_array)
 
     dimension = vectors_array.shape[1]
 
-    # Índice por producto interno.
-    # Con vectores normalizados equivale a similitud coseno.
     index = faiss.IndexFlatIP(dimension)
 
     index.add(vectors_array)
 
-    # Guardar índice vectorial
     faiss.write_index(
         index,
         str(INDEX_PATH),
     )
 
-    # Guardar texto + metadatos manteniendo
-    # el mismo orden que los vectores de FAISS
     chunks_data = []
 
     for chunk in chunks:
