@@ -52,7 +52,7 @@ def get_embeddings_model() -> GoogleGenerativeAIEmbeddings:
 def retrieve_documents(
     query: str,
     top_k: int = 4,
-    score_threshold: float = 0.35,
+    score_threshold: float = 0.60,
     category: str | None = None,
 ) -> list[dict[str, Any]]:
     if not query.strip():
