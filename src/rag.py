@@ -87,12 +87,39 @@ def format_history(
 
     return "\n".join(lines)
 
+def build_search_query(
+    question: str,
+    history: list[dict[str, Any]] | None,
+) -> str:
+    if not history:
+        return question
+
+    previous_questions = [
+        message["content"]
+        for message in history
+        if message["role"] == "user"
+    ]
+
+    if not previous_questions:
+        return question
+
+    last_question = previous_questions[-1]
+
+    return (
+        f"Contexto de la consulta anterior: {last_question}\n"
+        f"Pregunta actual: {question}"
+    )
 
 def generate_answer(
     question: str,
     history: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    results = retrieve_documents(question)
+    search_query = build_search_query(
+        question,
+        history,
+    )
+
+    results = retrieve_documents(search_query)
 
     if not results:
         return {
