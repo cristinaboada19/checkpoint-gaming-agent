@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -140,15 +141,37 @@ def build_search_query(
         f"Pregunta actual: {question}"
     )
 
+def is_greeting(question: str) -> bool:
+    normalized = question.strip().lower()
+    normalized = re.sub(r"[^\wáéíóúüñ]+", " ", normalized).strip()
+
+    patterns = (
+        r"hola+",
+        r"holi+",
+        r"buenas",
+        r"buen dia",
+        r"buenos dias",
+        r"buenas tardes",
+        r"buenas noches",
+    )
+
+    return any(re.fullmatch(pattern, normalized) for pattern in patterns)
+
 def generate_answer(
     question: str,
     history: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    search_query = build_search_query(
-        question,
-        history,
-    )
+    if is_greeting(question):
+        return {
+            "answer": (
+                "¡Hola! ¿En qué puedo ayudarte? "
+                "Puedo responder consultas basadas en la documentación interna "
+                "de Checkpoint Gaming."
+            ),
+            "sources": [],
+        }
 
+    search_query = build_search_query(question, history)
     results = retrieve_documents(search_query)
 
     if not results:
