@@ -228,18 +228,29 @@ Responde únicamente basándote en el contexto documental.
 
     llm = get_llm()
 
-    response = llm.invoke(
-        [
+    try:
+        response = llm.invoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=human_prompt),
-        ]
-    )
+        ])
+    except Exception as error:
+        error_message = str(error)
+
+        if "429" in error_message or "RESOURCE_EXHAUSTED" in error_message:
+            return {
+                "answer": (
+                    "El servicio de IA alcanzó temporalmente su límite de solicitudes. "
+                    "Intentá nuevamente más tarde."
+                ),
+                "sources": get_sources(results),
+            }
+
+        raise
 
     return {
         "answer": response.content,
         "sources": get_sources(results),
     }
-
 
 if __name__ == "__main__":
     question = "¿Qué pasa si un producto llega dañado?"
