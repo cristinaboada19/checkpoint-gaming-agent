@@ -1,10 +1,12 @@
-# 🎮 Checkpoint Gaming AI
+# Checkpoint Gaming AI
 
 Checkpoint Gaming AI es un agente de inteligencia artificial desarrollado como proyecto para el **Challenge de Alura**, orientado a facilitar la consulta de documentación interna dentro de una empresa ficticia de e-commerce especializada en productos gaming.
 
 El sistema permite que los colaboradores realicen preguntas en lenguaje natural sobre políticas, procedimientos y situaciones frecuentes de la empresa, obteniendo respuestas basadas en la documentación interna disponible.
 
 El proyecto utiliza una arquitectura **RAG (Retrieval-Augmented Generation)** para recuperar información relevante desde documentos corporativos y generar respuestas contextualizadas, reduciendo el riesgo de respuestas inventadas o fuera del alcance de la base de conocimiento.
+
+🌐 **[Probar Checkpoint Gaming AI en vivo](http://129.151.38.149:8501)**
 
 ---
 
@@ -448,11 +450,9 @@ El servicio mantiene la aplicación disponible de forma independiente de la sesi
 
 La aplicación fue desplegada públicamente en Oracle Cloud Infrastructure.
 
-**Demo:**
+### Acceder a la aplicación
 
-```text
-http://129.151.38.149:8501
-```
+👉 **[Abrir Checkpoint Gaming AI](http://129.151.38.149:8501)**
 
 > La disponibilidad de la demo depende del estado de la instancia de OCI y de los servicios externos utilizados por el proyecto.
 
