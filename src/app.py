@@ -1,7 +1,10 @@
+import time
+from uuid import uuid4
+
 import streamlit as st
 
+from execution_logger import log_execution
 from rag import generate_answer
-
 
 st.set_page_config(
     page_title="Checkpoint Gaming AI",
@@ -18,6 +21,9 @@ def save_feedback(index: int) -> None:
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid4())
 
 
 with st.sidebar:
@@ -37,6 +43,7 @@ with st.sidebar:
         use_container_width=True,
     ):
         st.session_state.messages = []
+        st.session_state.session_id = str(uuid4())
         st.rerun()
 
 
@@ -102,6 +109,8 @@ if prompt := st.chat_input(
         }
     )
 
+    start_time = time.perf_counter()
+
     with st.spinner(
         "Consultando la documentación..."
     ):
@@ -109,6 +118,18 @@ if prompt := st.chat_input(
             prompt,
             history,
         )
+
+    response_time_ms = round(
+        (time.perf_counter() - start_time) * 1000
+    )
+
+    log_execution(
+        session_id=st.session_state.session_id,
+        question=prompt,
+        answer=result["answer"],
+        sources=result["sources"],
+        response_time_ms=response_time_ms,
+    )
 
     st.session_state.messages.append(
         {
