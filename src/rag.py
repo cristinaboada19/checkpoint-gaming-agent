@@ -94,6 +94,37 @@ def build_search_query(
     if not history:
         return question
 
+    normalized = question.strip().lower()
+
+    follow_up_starts = (
+        "¿y ",
+        "y ",
+        "¿y si",
+        "y si",
+        "entonces",
+        "¿entonces",
+        "en ese caso",
+        "¿en ese caso",
+    )
+
+    follow_up_terms = (
+        "eso",
+        "ese caso",
+        "esa situación",
+        "lo mismo",
+    )
+
+    is_follow_up = (
+        normalized.startswith(follow_up_starts)
+        or any(
+            term in normalized
+            for term in follow_up_terms
+        )
+    )
+
+    if not is_follow_up:
+        return question
+
     previous_questions = [
         message["content"]
         for message in history
@@ -103,10 +134,9 @@ def build_search_query(
     if not previous_questions:
         return question
 
-    last_question = previous_questions[-1]
-
     return (
-        f"Contexto de la consulta anterior: {last_question}\n"
+        f"Contexto de la consulta anterior: "
+        f"{previous_questions[-1]}\n"
         f"Pregunta actual: {question}"
     )
 
