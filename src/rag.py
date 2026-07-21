@@ -149,10 +149,16 @@ def is_greeting(question: str) -> bool:
         r"hola+",
         r"holi+",
         r"buenas",
-        r"buen dia",
-        r"buenos dias",
+        r"buen d[ií]a",
+        r"buenos d[ií]as",
         r"buenas tardes",
         r"buenas noches",
+        r"hola+ buenas",
+        r"hola+ buen d[ií]a",
+        r"hola+ buenos d[ií]as",
+        r"hola+ buenas tardes",
+        r"hola+ buenas noches",
+        r"holi+ buenas",
     )
 
     return any(re.fullmatch(pattern, normalized) for pattern in patterns)
